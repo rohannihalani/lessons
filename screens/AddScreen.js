@@ -12,6 +12,7 @@ import {
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import * as AsyncStorage from "../utils/AsyncStorage";
 
 function AddScreen() {
   const navigation = useNavigation();
@@ -60,6 +61,18 @@ function AddScreen() {
     return fullDate;
   }
 
+  const setList = async (text) => {
+    const fullDate = getDate();
+    const lesson = text;
+    const item = { date: fullDate, lesson: lesson };
+    const lessonList = AsyncStorage.getItem("lessons");
+    const newList = [...lessonList, item];
+
+    await AsyncStorage.setItem("lessons", newList);
+
+    // console.log(lessonList);
+  };
+
   useEffect(() => {
     completeDate = getDate();
     setDate(completeDate);
@@ -67,6 +80,7 @@ function AddScreen() {
 
   const submitLesson = () => {
     data = lessonText;
+    // setList(data);
     route.params.onGoBack(data);
     setLessonText("");
     navigation.goBack();

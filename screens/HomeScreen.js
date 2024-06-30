@@ -18,10 +18,16 @@ import { useState, useEffect } from "react";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as AsyncStorage from "../utils/AsyncStorage";
+import { LogBox } from "react-native";
+
+LogBox.ignoreLogs([
+  "Non-serializable values were found in the navigation state",
+]);
 
 function HomeScreen() {
   const navigation = useNavigation();
   const [lessonList, setLessonList] = useState([]);
+  const [numLessons, setNumLessons] = useState(0);
   let row = [];
   let prevOpenedRow;
 
@@ -70,17 +76,24 @@ function HomeScreen() {
     await AsyncStorage.setItem("lessons", newList);
     const n = await AsyncStorage.getItem("lessons");
     console.log(n);
-
+    await AsyncStorage.setItem("number", newList.length);
+    setNumLessons(newList.length);
     // console.log(lessonList);
   };
 
   useEffect(() => {
     async function fetchData() {
       const lessons = await AsyncStorage.getItem("lessons");
+      const date = new Date();
+
       if (lessons != null) {
         setLessonList(lessons);
+        setNumLessons(lessonList.length);
+        await AsyncStorage.setItem("number", lessons.length);
+        await AsyncStorage.setItem("date", date.getDate());
+        setNumLessons(lessons.length);
       } else {
-        setLessonList([]);
+        // setLessonList([]);
       }
     }
     fetchData();
@@ -88,10 +101,12 @@ function HomeScreen() {
 
   const addLesson = () => {
     navigation.navigate("Add", {
-      onGoBack: async (data) => {
-        await AsyncStorage.setItem("lessons", lessonList);
-
+      onGoBack: (data) => {
+        // await AsyncStorage.setItem("lessons", lessonList);
+        // const updatedLessons = AsyncStorage.getItem("lessons");
         setList(data);
+
+        // setLessonList(updatedLessons);
       },
     });
   };
@@ -109,6 +124,8 @@ function HomeScreen() {
     console.log(index);
     setLessonList([...a]);
     await AsyncStorage.setItem("lessons", a);
+    setNumLessons(lessonList.length);
+    await AsyncStorage.setItem("number", lessonList.length);
   };
 
   const renderRightView = (progress, dragX, index) => {
@@ -132,9 +149,9 @@ function HomeScreen() {
     <GestureHandlerRootView>
       <KeyboardAvoidingView style={styles.container}>
         <View style={styles.topBar}>
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
-          </TouchableOpacity>
+          <View style={styles.editButton}>
+            <Text style={styles.editButtonText}>Lessons: {numLessons}</Text>
+          </View>
           <TouchableOpacity style={styles.addButton} onPress={addLesson}>
             <Text style={styles.addButtonText}>+</Text>
           </TouchableOpacity>

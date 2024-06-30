@@ -11,10 +11,78 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome6";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as AsyncStorage from "../utils/AsyncStorage";
 
 function SpotlightScreen() {
   const navigation = useNavigation();
+  const [numLessons, setNumLessons] = useState(0);
+  const [lastFive, setLastFive] = useState([]);
+  const [lessonDate, setLessonDate] = useState("");
+  const [lessonText, setLessonText] = useState("");
+
+  async function updateSpotlight() {
+    const lastDate = await AsyncStorage.getItem("date");
+    const date = new Date();
+    const currDate = date.getDate();
+    const num = await AsyncStorage.getItem("number");
+    setNumLessons(num);
+    // const currDate = 31;
+    if (num > 5) {
+      if (currDate != lastDate || num == 6) {
+        // update spotlight lesson
+        const lessonList = await AsyncStorage.getItem("lessons");
+        let notValid = true;
+        let lesson;
+        while (notValid) {
+          let count = 0;
+          const randomNum = Math.floor(Math.random() * lessonList.length);
+          for (let index = 0; index < lastFive.length; index++) {
+            if (lessonList[randomNum].lesson === lastFive[index].lesson) {
+              count++;
+            }
+          }
+          if (count === 0) {
+            notValid = false;
+            lesson = lessonList[randomNum];
+          }
+        }
+        if (lastFive.length === 5) {
+          // remove first element and then add lesson to the end
+          const newArray = lastFive;
+          newArray.shift();
+          newArray.push(lesson);
+          setLastFive(newArray);
+        } else {
+          const newArray = lastFive;
+          newArray.push(lesson);
+          setLastFive(newArray);
+        }
+
+        setLessonDate(lesson.date);
+        setLessonText(lesson.lesson);
+
+        // update day
+        await AsyncStorage.setItem("date", currDate);
+      } else {
+        console.log("same day");
+      }
+    } else {
+      setLessonText("Add more than 5 lessons to unlock this feature!");
+      const number = await AsyncStorage.getItem("number");
+
+      setLessonDate("Current Lessons: " + number);
+    }
+  }
+
+  useEffect(() => {
+    async function getNum() {
+      const num = await AsyncStorage.getItem("number");
+      setNumLessons(num);
+    }
+    getNum();
+    updateSpotlight();
+  }, []);
 
   const journal = () => {
     navigation.navigate("Home");
@@ -24,7 +92,7 @@ function SpotlightScreen() {
     <KeyboardAvoidingView style={styles.container}>
       <View style={styles.topBar}>
         <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>Lessons: 5</Text>
+          <Text style={styles.editButtonText}>Lessons: {numLessons}</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.titleContainer}>
@@ -32,12 +100,8 @@ function SpotlightScreen() {
       </View>
       <View style={styles.lessonContainer}>
         <View style={styles.lesson}>
-          <Text style={styles.lessonDate}>June 1st, 2024</Text>
-          <Text style={styles.lessonText}>
-            My daily lesson today was that when I went home I did this really
-            cool thing and it was super cool then i ate a yogurt and wow it was
-            just awesmoe
-          </Text>
+          <Text style={styles.lessonDate}>{lessonDate}</Text>
+          <Text style={styles.lessonText}>{lessonText}</Text>
         </View>
       </View>
       {/* NAVBAR START */}
