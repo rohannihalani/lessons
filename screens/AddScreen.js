@@ -123,7 +123,11 @@ function AddScreen() {
             selectionColor="#242038"
             multiline={true}
             textAlign="false"
-            style={{ width: "100%", padding: "5%" }}
+            style={{
+              width: "100%",
+              padding: "5%",
+              height: "85%",
+            }}
           />
         </View>
       </View>

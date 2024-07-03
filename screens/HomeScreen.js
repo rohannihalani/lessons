@@ -94,6 +94,7 @@ function HomeScreen() {
         setNumLessons(lessons.length);
       } else {
         // setLessonList([]);
+        await AsyncStorage.setItem("number", 0);
       }
     }
     fetchData();
@@ -251,7 +252,8 @@ const styles = StyleSheet.create({
   lessonContainer: {
     flex: 10,
     width: "100%",
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
     // paddingHorizontal: "5%",
   },
   navbar: {
