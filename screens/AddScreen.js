@@ -78,6 +78,15 @@ function AddScreen() {
     setDate(completeDate);
   }, []);
 
+  const checkString = () => {
+    data = lessonText;
+    if (/^\s*$/.test(data)) {
+      homeScreen();
+    } else {
+      submitLesson();
+    }
+  };
+
   const submitLesson = () => {
     data = lessonText;
     // setList(data);
@@ -102,7 +111,7 @@ function AddScreen() {
         <TouchableOpacity style={styles.editButton} onPress={homeScreen}>
           <Text style={styles.editButtonText}>Cancel</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton} onPress={submitLesson}>
+        <TouchableOpacity style={styles.addButton} onPress={checkString}>
           <Text style={styles.addButtonText}>Done</Text>
         </TouchableOpacity>
       </View>

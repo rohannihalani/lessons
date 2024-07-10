@@ -252,8 +252,8 @@ const styles = StyleSheet.create({
   lessonContainer: {
     flex: 10,
     width: "100%",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    // borderTopWidth: 1,
+    // borderBottomWidth: 1,
     // paddingHorizontal: "5%",
   },
   navbar: {

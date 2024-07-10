@@ -58,6 +58,7 @@ function SpotlightScreen() {
           newArray.push(lesson);
           setLastFive(newArray);
         }
+        await AsyncStorage.setItem("currLesson", lesson);
 
         setLessonDate(lesson.date);
         setLessonText(lesson.lesson);
@@ -65,6 +66,9 @@ function SpotlightScreen() {
         // update day
         await AsyncStorage.setItem("date", currDate);
       } else {
+        const currLesson = await AsyncStorage.getItem("currLesson");
+        setLessonDate(currLesson.date);
+        setLessonText(currLesson.lesson);
         console.log("same day");
       }
     } else {
@@ -191,6 +195,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#CAC4CE",
     borderRadius: 20,
     alignItems: "center",
+    borderWidth: 1,
+    minWidth: "90%",
+    maxWidth: "91%",
   },
   lessonText: {
     paddingTop: "5%",
