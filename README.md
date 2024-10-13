@@ -1,0 +1,1 @@
+The lessons app is an application designed to allow users to write down daily lessons from their day. The app will keep track of these daily lessons, and will spotlight a random one for the user each day. 
